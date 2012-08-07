@@ -13,24 +13,25 @@ from utils import template_context, template_to_file
 def setup_paths():
     require("java_root", "java_conf", "java_log", "project_name")
     
-    env.jar_file = "%s.jar" % env.project_name
-    env.jar_path = os.path.join(env.jar_root, env.jar_file)
+    if not 'jar_path' in env
+        env.jar_file = "%s.jar" % env.project_name
+        env.jar_path = os.path.join(env.jar_root, env.jar_file)
     
-    env.war_file = "%s.war" % env.project_name
-    env.war_path = os.path.join(env.java_root, env.war_file)
+    if not 'war_path' in env:
+        env.war_path = "%s.war" % env.project_name
 
-    env.app_config_archive = "%s-config.tar.gz" % env.project_name
-    env.sql_archive = "%s-sql.tar.gz" % env.project_name
+    if not 'remote_war_path' in env:
+        env.remote_war_path = os.path.join(env.java_root, env.remote_war_file)
 
-    try:
-       env.config_dir_name
-    except NameError:
-       env.config_dir_name = None
-    except AttributeError:
-       env.config_dir_name = None
+    if not 'app_config_archive' in env:
+        env.app_config_archive = "%s-config.tar.gz" % env.project_name
 
-    if env.config_dir_name is None:
+     if not 'sql_archive' in env:
+        env.sql_archive = "%s-sql.tar.gz" % env.project_name
+
+     if not 'config_dir_name' in env:
        env.config_dir_name = env.project_name
+
     env.app_config_dir = os.path.join(env.java_conf, env.config_dir_name)
     env.app_xml_config_dir = os.path.join(env.java_conf, env.project_name)
     env.log_dir = os.path.join(env.java_log, env.project_name)
@@ -86,8 +87,8 @@ def deploy_java():
         delete=True
     )
 
-    require("war_file", "war_path")
-    rsync_as_user(env.war_path, env.war_file, env.sudo_user)
+    require("remote_war_file", "war_path")
+    rsync_as_user(env.remote_war_path, env.war_path, env.sudo_user)
 
     require("project_name")
     if env.get("tomcat_context_path"):
