@@ -229,3 +229,16 @@ def template_to_file(source, target, context):
         with open(source) as source_file:
             text = source_file.read() % context
         target_file.write(text)
+
+
+def template_to_file_with_dollar(source, target, context):
+    """
+    Populate templated local_settings and place it in the tempdir to be
+    rsynced.
+    """
+
+    with open(target, "w") as target_file:
+        with open(source) as source_file:
+            text = Template(source_file.read()).substitute(context)
+        target_file.write(text)
+
